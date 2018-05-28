@@ -41,27 +41,27 @@ int main(int argc , char *argv[]){
     }
 
     //Listen
-    listen(sock , 3);
+    listen(sock , 5);
     
-    //Accept and incoming connection
-    puts("Waiting for incoming connections...");
+    //Accept connection from incoming client
+    puts("Waiting for connection...");
     c = sizeof(struct sockaddr_in);
     
-
-
-
-
-
-    //accept connection from an incoming client
     client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c);
     if (client_sock < 0)
     {
-        perror("accept failed");
+        perror("Conection failed");
         return 1;
     }
     puts("Connection accepted");
     
 
+
+
+    //send(sock, message, sizeof message, 0);
+    
+
+    
 
 
 
