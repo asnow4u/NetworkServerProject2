@@ -4,6 +4,7 @@
 #include<sys/socket.h>
 #include<sys/types.h>
 #include<arpa/inet.h>
+#include<dirent.h>
 
 int main(int argc , char *argv[]){
 
@@ -14,74 +15,64 @@ int main(int argc , char *argv[]){
     }
 
     int sock;
-    int port = atoi(argv[1]);
     int client_sock;
-    int c;
-    int read_size;
+    int port = atoi(argv[1]);
     struct sockaddr_in serv_addr , client;
-    char client_message[2000];
+    char client_message[256];
 
     //Create socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
-
     if (sock < 0){
         perror("Could not create socket");
         exit(1);
     }
 
-    //Prepare the sockaddr_in structure
+    //Prepare the sock
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons( port );
 
-    //Bind
-    if( bind(sock,(struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
-        perror("Bind failed. Error");
-        return 1;
+    //Bind socket 
+    bind(sock,(struct sockaddr *) &serv_addr, sizeof(serv_addr)); 
+    
+    listen(sock, 5);
+    printf("Waiting for connection...\n");
+
+    client_sock = accept(sock, NULL, NULL);
+    printf("Connection Established\n");
+
+    //Recieve from client
+    recv(client_sock, &client_message, sizeof(client_message), 0);
+    
+    if (strcmp("Dir", client_message)){
+        
+        //Send Directory to client
+        struct dirent *de;
+        DIR *dr = opendir(".");
+
+        while ((de = readdir(dr)) != NULL){
+            //printf("%s\n", de->d_name);
+
+            send(client_sock, de->d_name, strlen(de->d_name), 0);   
+            send(client_sock, "\n", strlen("\n"), 0);
+       }
+
+        closedir(dr);
+
+    } else {
+        //search and send file
     }
 
-    //Listen
-    listen(sock , 5);
+       
     
-    //Accept connection from incoming client
-    puts("Waiting for connection...");
-    c = sizeof(struct sockaddr_in);
-    
-    client_sock = accept(sock, (struct sockaddr *)&client, (socklen_t*)&c);
-    if (client_sock < 0)
-    {
-        perror("Conection failed");
-        return 1;
-    }
-    puts("Connection accepted");
-    
+    //client_message can be equal to "Dir", send directory, otherwise search for file and send result, either file or couldnt find file message 
 
 
 
-    //send(sock, message, sizeof message, 0);
-    
-
-    
 
 
 
-    //Receive a message from client
-    while( (read_size = read(client_sock , client_message , sizeof(client_message))) > 0 )
-    {
-        //Send the message back to client
-        write(client_sock , client_message , strlen(client_message));
-        memset( &client_message, 0, sizeof(client_message));
-    }
-    
-    if(read_size == 0)
-    {
-        puts("Client disconnected");
-        fflush(stdout);
-    }
-    else if(read_size == -1)
-    {
-        perror("recv failed");
-    }
-    
+
     return 0;
+    
  }

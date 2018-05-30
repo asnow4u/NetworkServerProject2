@@ -6,6 +6,7 @@ public class FClient{
         
         String file; 
         String userCommand;
+        String server;
 
         //Check arguments
         if (args.length < 2){
@@ -29,16 +30,27 @@ public class FClient{
         //Check for Arguments 3 and 4    
         if (args.length > 2){
             if ("-1".equals(args[2])){
+                
                 //Directory
-                out.write("Directory"); 
+                out.println("Dir");
+                System.out.println("Directory Files:");
+                server = in.readLine();
+                
+                while (server != null){
+                    System.out.println(server);
+                    server = in.readLine();
+               }
+
             } else if ("-g".equals(args[2])){
                 //File
                 if (args.length > 3){
                     //fetch file
+                    //out.println(args[3])
                 } else {
                     System.out.print("File> ");
                     file = input.readLine();
                     //fetch file
+                    //out.println(args[3])
                 }
            
             } else {
@@ -53,11 +65,13 @@ public class FClient{
             userCommand = input.readLine();
             if ("-1".equals(userCommand)){
                 //directory
+                out.println("Dir");
             } else if ("-g".equals(userCommand)){
                 //File
                 System.out.print("File> ");
                 file = input.readLine();
                 //fetch file
+                //out.println(file)
             } else {
                 System.out.println("Invalid Command\n");
                 return;
