@@ -7,7 +7,7 @@ public class FClient{
         String file; 
         String userCommand;
         String server;
-
+        
         //Check arguments
         if (args.length < 2){
             System.out.println("Must have host name and port number as arguments\n");
@@ -42,12 +42,13 @@ public class FClient{
                }
 
             } else if ("-g".equals(args[2])){
+                
                 //File
                 if (args.length > 3){
-                    //fetch file
-                    //out.println(args[3])
+                    out.println(args[3]);
                 } else {
-                    System.out.print("File> ");
+                   
+                   System.out.print("File> ");
                     file = input.readLine();
                     //fetch file
                     //out.println(args[3])

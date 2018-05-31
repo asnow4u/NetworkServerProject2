@@ -19,6 +19,7 @@ int main(int argc , char *argv[]){
     int port = atoi(argv[1]);
     struct sockaddr_in serv_addr , client;
     char client_message[256];
+    int len;
 
     //Create socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -43,16 +44,17 @@ int main(int argc , char *argv[]){
 
     //Recieve from client
     recv(client_sock, &client_message, sizeof(client_message), 0);
-    
-    if (strcmp("Dir", client_message)){
-        
+    len = strlen(client_message);
+    if (client_message[len-1] == '\n'){
+        client_message[len-1] = 0;
+    }
+
+    if (strcmp("Dir", client_message) == 0){ //If client message = Dir  
         //Send Directory to client
         struct dirent *de;
         DIR *dr = opendir(".");
 
         while ((de = readdir(dr)) != NULL){
-            //printf("%s\n", de->d_name);
-
             send(client_sock, de->d_name, strlen(de->d_name), 0);   
             send(client_sock, "\n", strlen("\n"), 0);
        }
@@ -60,12 +62,28 @@ int main(int argc , char *argv[]){
         closedir(dr);
 
     } else {
-        //search and send file
+        
+        FILE* file;
+        
+        //int len;
+        //len = strlen(client_message);
+        //if( client_message[len-1] == '\n'){
+        //    client_message[len-1] = 0;
+        //   
+        //  }
+
+        
+        file = fopen(client_message, "r");
+        if (file == NULL){
+            printf("Failed to open file");
+        } else {
+            printf("Opened file");
+        }
+
     }
 
        
     
-    //client_message can be equal to "Dir", send directory, otherwise search for file and send result, either file or couldnt find file message 
 
 
 
