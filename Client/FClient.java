@@ -33,7 +33,7 @@ public class FClient{
         
         //Check for Arguments 3 and 4    
         if (args.length > 2){
-            if ("-1".equals(args[2])){
+            if ("-l".equals(args[2])){
                 
                 //Send for and print directory list
                 out.println("Dir");
@@ -112,7 +112,7 @@ public class FClient{
             System.out.print("Command> ");
             userCommand = input.readLine();
 
-            if ("-1".equals(userCommand)){
+            if ("-l".equals(userCommand)){
                 
                 //Send for and print directory
                 out.println("Dir");
