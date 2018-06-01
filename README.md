@@ -37,3 +37,7 @@ The server will send your request back and display it on the client terminal bas
  
  If you ask for a file and it displays that file was created, the file will be found in the folder where you compiled the client. use "ls" to see the files in the directory.   
 
+To make it easy I have provided a txt file in the server that you can request. The file name is test.txt. Use the following code when the server is up.
+"java FClient localhost portnumber -g test.txt"
+
+
