@@ -84,7 +84,7 @@ int main(int argc , char *argv[]){
             unsigned char buffer[1024] = {0};
             
             printf("\nSending File...\n");
-            send(client_sock, "Recieving File...", strlen("Recieving File..."), 0);
+            send(client_sock, "Recieving File...\n", strlen("Recieving File...\n"), 0);
             //read from file
             cRead = fread(buffer, 1, 1024, file);
             
