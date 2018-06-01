@@ -13,7 +13,8 @@ int main(int argc , char *argv[]){
         printf("Need a port num argument\n");
         exit(1);
     }
-
+    
+    //Variables
     int sock;
     int client_sock;
     int port = atoi(argv[1]);
@@ -23,6 +24,7 @@ int main(int argc , char *argv[]){
 
     //Create socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
+    
     if (sock < 0){
         perror("Could not create socket");
         exit(1);
@@ -37,19 +39,22 @@ int main(int argc , char *argv[]){
     bind(sock,(struct sockaddr *) &serv_addr, sizeof(serv_addr)); 
     
     listen(sock, 5);
-    printf("Waiting for connection...\n");
+    printf("\n\nWaiting for connection...\n");
 
     client_sock = accept(sock, NULL, NULL);
-    printf("Connection Established\n");
+    printf("\nConnection Established\n");
 
     //Recieve from client
     recv(client_sock, &client_message, sizeof(client_message), 0);
     len = strlen(client_message);
+    
     if (client_message[len-1] == '\n'){
         client_message[len-1] = 0;
     }
 
-    if (strcmp("Dir", client_message) == 0){ //If client message = Dir  
+    //Directory request (if client message == Dir
+    if (strcmp("Dir", client_message) == 0){   
+        
         //Send Directory to client
         struct dirent *de;
         DIR *dr = opendir(".");
@@ -62,35 +67,47 @@ int main(int argc , char *argv[]){
         closedir(dr);
 
     } else {
-        
+     
+        //All other request will be considered a file request.
+        //The client will determain if the proper command is used. 
         FILE* file;
-        
-        //int len;
-        //len = strlen(client_message);
-        //if( client_message[len-1] == '\n'){
-        //    client_message[len-1] = 0;
-        //   
-        //  }
-
-        
         file = fopen(client_message, "r");
+        printf("\nChecking for %s \n", client_message); 
+        
+        //Check file
         if (file == NULL){
-            printf("Failed to open file");
+            send(client_sock, "File Not Found", strlen("File Not Found"), 0);
         } else {
-            printf("Opened file");
-        }
+            
+            //Send file
+            int cRead;
+            unsigned char buffer[1024] = {0};
+            
+            printf("\nSending File...\n");
+            send(client_sock, "Recieving File...", strlen("Recieving File..."), 0);
+            //read from file
+            cRead = fread(buffer, 1, 1024, file);
+            
+            //Check reading in case file is bigger than 1024 bytes.
+            //Send what was aquired 
+            while (cRead == 1024){
+                if (cRead > 0){
+                    send(client_sock, buffer, cRead, 0);
+                }
+            }
+            
+            //Send last section of file.
+            //check for EOF and close file
+            if (cRead < 1024){
+                send(client_sock, buffer, cRead, 0);
+                if (feof(file)){
+                    printf("\nFile Sent\n\n");
+                    fclose(file);
+                }
+            }  
+         }
+      }
 
-    }
-
-       
-    
-
-
-
-
-
-
-
+    close(sock);
     return 0;
-    
  }
